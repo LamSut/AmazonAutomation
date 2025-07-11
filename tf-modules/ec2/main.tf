@@ -3,7 +3,7 @@
 ##############################
 
 resource "aws_instance" "ec2_amazon" {
-  count         = 2
+  count         = 0
   ami           = data.aws_ami.ami_amazon.id
   instance_type = var.instance_small
   key_name      = var.key_name
@@ -29,7 +29,7 @@ resource "aws_eip" "eip_amazon" {
 ########################
 
 resource "aws_instance" "ec2_ubuntu" {
-  count         = 2
+  count         = 0
   ami           = data.aws_ami.ami_ubuntu.id
   instance_type = var.instance_small
   key_name      = var.key_name
@@ -55,7 +55,7 @@ resource "aws_eip" "eip_ubuntu" {
 #########################
 
 resource "aws_instance" "ec2_windows" {
-  count         = 2
+  count         = 0
   ami           = data.aws_ami.ami_windows.id
   instance_type = var.instance_small
   key_name      = var.key_name

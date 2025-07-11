@@ -1,13 +1,3 @@
-#####################
-### EC2 Key Pairs ###
-#####################
-
-variable "key_name" {
-  type    = string
-  default = "b2111933-pair"
-}
-
-
 ##################
 ### Networking ###
 ##################
@@ -18,6 +8,16 @@ variable "private_subnet_2" {}
 variable "sg_ssh" {}
 variable "sg_rdp" {}
 variable "sg_rds_ec2" {}
+
+
+#####################
+### EC2 Key Pairs ###
+#####################
+
+variable "key_name" {
+  type    = string
+  default = "b2111933-pair"
+}
 
 
 ################
