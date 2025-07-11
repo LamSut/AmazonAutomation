@@ -8,19 +8,29 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
-variable "subnet1_cidr" {
+variable "public_subnet_1_cidr" {
   type    = string
   default = "10.0.1.0/24"
 }
 
-variable "subnet2_cidr" {
+variable "private_subnet_1_cidr" {
   type    = string
-  default = "10.0.2.0/24"
+  default = "10.0.100.0/24"
 }
 
-variable "availability_zone" {
+variable "private_subnet_2_cidr" {
+  type    = string
+  default = "10.0.101.0/24"
+}
+
+variable "availability_zone_1" {
   type    = string
   default = "us-east-1a"
+}
+
+variable "availability_zone_2" {
+  type    = string
+  default = "us-east-1b"
 }
 
 

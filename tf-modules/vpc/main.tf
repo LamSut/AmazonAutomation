@@ -1,121 +1,122 @@
-//vpc
-resource "aws_vpc" "b2111933_vpc" {
+###########
+### VPC ###
+###########
+
+resource "aws_vpc" "limtruong_vpc" {
   cidr_block           = var.vpc_cidr
-  enable_dns_hostnames = true
   enable_dns_support   = true
-
-  tags = {
-    "Name" = "b2111933_vpc"
-  }
+  enable_dns_hostnames = true
+  tags                 = { Name = "limtruong_vpc" }
 }
 
-//vpc gw
-resource "aws_internet_gateway" "b2111933_vpc_igw" {
-  vpc_id = aws_vpc.b2111933_vpc.id
 
-  tags = {
-    Name = "vpc_igw"
-  }
-}
+#####################
+### Public Subnet ###
+#####################
 
-//subnet 1
-resource "aws_subnet" "public_subnet1" {
-  vpc_id                  = aws_vpc.b2111933_vpc.id
-  cidr_block              = var.subnet1_cidr
+resource "aws_subnet" "public_subnet_1" {
+  vpc_id                  = aws_vpc.limtruong_vpc.id
+  cidr_block              = var.public_subnet_1_cidr
   map_public_ip_on_launch = true
-  availability_zone       = var.availability_zone
-
-  tags = {
-    "Name" = "public_subnet1"
-  }
+  availability_zone       = "us-east-1a"
 }
 
-resource "aws_route_table" "public_subnet_route_table1" {
-  vpc_id = aws_vpc.b2111933_vpc.id
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.limtruong_vpc.id
+}
 
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.limtruong_vpc.id
   route {
     cidr_block = var.default_cidr
-    gateway_id = aws_internet_gateway.b2111933_vpc_igw.id
-  }
-
-  tags = {
-    Name = "public_subnet_route_table1"
+    gateway_id = aws_internet_gateway.igw.id
   }
 }
 
-resource "aws_route_table_association" "public_subnet_route_table1" {
-  subnet_id      = aws_subnet.public_subnet1.id
-  route_table_id = aws_route_table.public_subnet_route_table1.id
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public_subnet_1.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-//subnet2
-resource "aws_subnet" "public_subnet2" {
-  vpc_id                  = aws_vpc.b2111933_vpc.id
-  cidr_block              = var.subnet2_cidr
-  map_public_ip_on_launch = true
-  availability_zone       = var.availability_zone
 
-  tags = {
-    "Name" = "public_subnet2"
-  }
+######################
+### Private Subnet ###
+######################
+
+resource "aws_subnet" "private_subnet_1" {
+  vpc_id                  = aws_vpc.limtruong_vpc.id
+  cidr_block              = var.private_subnet_1_cidr
+  map_public_ip_on_launch = false
+  availability_zone       = var.availability_zone_1
 }
 
-resource "aws_route_table" "public_subnet_route_table2" {
-  vpc_id = aws_vpc.b2111933_vpc.id
-
-  route {
-    cidr_block = var.default_cidr
-    gateway_id = aws_internet_gateway.b2111933_vpc_igw.id
-  }
-
-  tags = {
-    Name = "public_subnet_route_table2"
-  }
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id                  = aws_vpc.limtruong_vpc.id
+  cidr_block              = var.private_subnet_2_cidr
+  map_public_ip_on_launch = false
+  availability_zone       = var.availability_zone_2
 }
 
-resource "aws_route_table_association" "public_subnet_route_table2" {
-  subnet_id      = aws_subnet.public_subnet2.id
-  route_table_id = aws_route_table.public_subnet_route_table2.id
-}
 
-//security group
-resource "aws_security_group" "security_group" {
-  vpc_id      = aws_vpc.b2111933_vpc.id
-  name        = "my_security_group"
-  description = "Public Security Group"
+#######################
+### Security Groups ###
+#######################
 
-  ingress { //for HTTP
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.default_cidr]
-  }
+resource "aws_security_group" "sg_ssh" {
+  name        = "sg_ssh"
+  description = "Allow SSH access"
+  vpc_id      = aws_vpc.limtruong_vpc.id
 
-  ingress { //for SSH
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.default_cidr]
-  }
-
-  ingress { //for Windows Remote Connection
-    from_port   = 3389
-    to_port     = 3389
-    protocol    = "tcp"
-    cidr_blocks = [var.default_cidr]
-  }
-
-  ingress {
-    from_port   = -1
-    to_port     = -1
-    protocol    = "icmp"
-    cidr_blocks = [var.default_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [var.default_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "sg_rdp" {
+  name        = "sg_rdp"
+  description = "Allow RDP access"
+  vpc_id      = aws_vpc.limtruong_vpc.id
+
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "sg_rds_ec2" {
+  name        = "sg_rds"
+  description = "Allow MySQL from EC2 only"
+  vpc_id      = aws_vpc.limtruong_vpc.id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.sg_ssh.id, aws_security_group.sg_rdp.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

@@ -1,47 +1,76 @@
-resource "aws_instance" "amazon" {
-  count = 1
+##############################
+### Amazon Linux Instances ###
+##############################
 
-  ami           = var.ami_free_amazon
-  instance_type = var.instance_type_free
+resource "aws_instance" "ec2_amazon" {
+  count         = 2
+  ami           = data.aws_ami.ami_amazon.id
+  instance_type = var.instance_small
+  key_name      = var.key_name
 
-  key_name = var.key_name
-
-  subnet_id              = var.subnet1
-  vpc_security_group_ids = [var.security_group]
+  subnet_id              = var.public_subnet_1
+  vpc_security_group_ids = [var.sg_ssh]
 
   tags = {
-    Name = "B2111933 Amazon Linux"
+    Name = "Amazon Linux ${count.index}"
   }
 }
 
-resource "aws_instance" "ubuntu" {
-  count = 1
+resource "aws_eip" "eip_amazon" {
+  count    = length(aws_instance.ec2_amazon)
+  instance = aws_instance.ec2_amazon[count.index].id
 
-  ami           = var.ami_free_ubuntu
-  instance_type = var.instance_type_free
+  depends_on = [aws_instance.ec2_amazon]
+}
 
-  key_name = var.key_name
 
-  subnet_id              = var.subnet1
-  vpc_security_group_ids = [var.security_group]
+########################
+### Ubuntu Instances ###
+########################
+
+resource "aws_instance" "ec2_ubuntu" {
+  count         = 2
+  ami           = data.aws_ami.ami_ubuntu.id
+  instance_type = var.instance_small
+  key_name      = var.key_name
+
+  subnet_id              = var.public_subnet_1
+  vpc_security_group_ids = [var.sg_ssh]
 
   tags = {
-    Name = "B2111933 Ubuntu"
+    Name = "Ubuntu ${count.index}"
   }
 }
 
-resource "aws_instance" "windows" {
-  count = 1
+resource "aws_eip" "eip_ubuntu" {
+  count    = length(aws_instance.ec2_ubuntu)
+  instance = aws_instance.ec2_ubuntu[count.index].id
 
-  ami           = var.ami_free_windows
-  instance_type = var.instance_type_free
+  depends_on = [aws_instance.ec2_ubuntu]
+}
 
-  key_name = var.key_name
 
-  subnet_id              = var.subnet2
-  vpc_security_group_ids = [var.security_group]
+#########################
+### Windows Instances ###
+#########################
+
+resource "aws_instance" "ec2_windows" {
+  count         = 2
+  ami           = data.aws_ami.ami_windows.id
+  instance_type = var.instance_small
+  key_name      = var.key_name
+
+  subnet_id              = var.public_subnet_1
+  vpc_security_group_ids = [var.sg_rdp]
 
   tags = {
-    Name = "B2111933 Windows"
+    Name = "Windows ${count.index}"
   }
+}
+
+resource "aws_eip" "eip_windows" {
+  count    = length(aws_instance.ec2_windows)
+  instance = aws_instance.ec2_windows[count.index].id
+
+  depends_on = [aws_instance.ec2_windows]
 }

@@ -1,54 +1,58 @@
-//for unit testing
+##################
+### EC2 Amazon ###
+##################
 
-output "ami_amazon" {
-  value = aws_instance.amazon[*].ami
+output "amazon_ids" {
+  description = "IDs of Amazon Linux instances"
+  value       = aws_instance.ec2_amazon[*].id
 }
 
-output "instance_type_amazon" {
-  value = aws_instance.amazon[*].instance_type
+output "amazon_public_ips" {
+  description = "Elastic IPs of Amazon Linux instances"
+  value       = aws_eip.eip_amazon[*].public_ip
 }
 
-output "ami_ubuntu" {
-  value = aws_instance.ubuntu[*].ami
+output "amazon_names" {
+  description = "Tag 'Name' of Amazon Linux instances"
+  value       = [for inst in aws_instance.ec2_amazon : inst.tags["Name"]]
 }
 
-output "instance_type_ubuntu" {
-  value = aws_instance.ubuntu[*].instance_type
+
+##################
+### EC2 Ubuntu ###
+##################
+
+output "ubuntu_ids" {
+  description = "IDs of Ubuntu instances"
+  value       = aws_instance.ec2_ubuntu[*].id
 }
 
-output "ami_windows" {
-  value = aws_instance.windows[*].ami
+output "ubuntu_public_ips" {
+  description = "Elastic IPs of Ubuntu instances"
+  value       = aws_eip.eip_ubuntu[*].public_ip
 }
 
-output "instance_type_windows" {
-  value = aws_instance.windows[*].instance_type
+output "ubuntu_names" {
+  description = "Tag 'Name' of Ubuntu instances"
+  value       = [for inst in aws_instance.ec2_ubuntu : inst.tags["Name"]]
 }
 
-//for integration testing
 
-//amazon network
-output "subnet_amazon" {
-  value = aws_instance.amazon[*].subnet_id
+######################
+### Ec2Windows EC2 ###
+######################
+
+output "windows_ids" {
+  description = "IDs of Windows instances"
+  value       = aws_instance.ec2_windows[*].id
 }
 
-output "sg_amazon" {
-  value = aws_instance.amazon[*].vpc_security_group_ids
+output "windows_public_ips" {
+  description = "Elastic IPs of Windows instances"
+  value       = aws_eip.eip_windows[*].public_ip
 }
 
-//ubuntu network
-output "subnet_ubuntu" {
-  value = aws_instance.ubuntu[*].subnet_id
-}
-
-output "sg_ubuntu" {
-  value = aws_instance.ubuntu[*].vpc_security_group_ids
-}
-
-//amazon network
-output "subnet_windows" {
-  value = aws_instance.windows[*].subnet_id
-}
-
-output "sg_windows" {
-  value = aws_instance.windows[*].vpc_security_group_ids
+output "windows_names" {
+  description = "Tag 'Name' of Windows instances"
+  value       = [for inst in aws_instance.ec2_windows : inst.tags["Name"]]
 }
