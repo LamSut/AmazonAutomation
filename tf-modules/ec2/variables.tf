@@ -24,13 +24,13 @@ variable "key_name" {
 ### EC2 AMIs ###
 ################
 
-data "aws_ami" "ami_amazon" {
+data "aws_ami" "ami_amazon_2023" {
   most_recent = true
   owners      = ["137112412989"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-*-x86_64"]
   }
 
   filter {
@@ -39,13 +39,13 @@ data "aws_ami" "ami_amazon" {
   }
 }
 
-data "aws_ami" "ami_ubuntu" {
+data "aws_ami" "ami_ubuntu_2404" {
   most_recent = true
   owners      = ["099720109477"]
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -54,13 +54,13 @@ data "aws_ami" "ami_ubuntu" {
   }
 }
 
-data "aws_ami" "ami_windows" {
+data "aws_ami" "ami_windows_2025" {
   most_recent = true
   owners      = ["801119661308"]
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-*"]
+    values = ["Windows_Server-2025-English-Full-Base-*"]
   }
 
   filter {
