@@ -42,3 +42,17 @@ output "ec2_public_ips" {
 #   description = "MySQL CLI connection string"
 #   value       = "mysql -h ${module.rds.mysql_endpoint} -u limtruong -plimkhietngoingoi limdb"
 # }
+
+
+###################
+### S3 Storage  ###
+###################
+
+module "s3_static_site" {
+  source = "./tf-modules/s3"
+}
+
+output "static_website_url" {
+  description = "URL to access the static website"
+  value       = module.s3_static_site.static_website_url
+}
